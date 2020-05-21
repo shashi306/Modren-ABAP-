@@ -1,0 +1,76 @@
+Inline Declarations:-
+1) Read table tab into data(wa).
+2) ref-> method( Importing p1 = DATA(a1)
+          p2 = DATA(a2)
+                 RECEIVING rc = DATA(ok) ).
+3) DATA(new) = old + inc.
+
+4) Read Table tab ASSIGNING FIELD-SYMBOL(<LINE1>).
+LOOP AT tab ASSIGNING FIELD-SYMBOL(<LINE1>).
+   ASSIGN COMPONENT ... of <line> TO FIELD-SYMBOL(<COMP>).
+ENDLOOP.   
+
+5) Select vbeln, uname, SUBSRTING( name1, 6, 30 ) as name from vbrp 
+   where vbeln = l_vbeln and date = @sy-datum.
+   into table @dumps or @DATA(dumps).
+Constructors:
+Syntax:  operator type(.. )
+         operator #(.. ) These new operators construct values of a specified type or Inferred type(#),
+                         where operator is a {New, value,..} and the syntax inside() depends on operator.
+New             --> creates objects/data objects.
+Exact 	  	--> Performs losses calculations or assignments.
+Value		--> creates values(esp of structured types).
+Ref		--> creates data references.
+Conv		--> converts values
+Cast		--> Performs up or down casts of references
+Cond/Switch	--> compute values conditionally.
+
+6) DATA(oref) = NEW class( param1 = a1 param2 = a2).
+   DATA(tab) = VALUE table_type( ( col1 = 10 col2 = 'a' )
+				 ( col1 = 20 col2 = 'b' ) ).
+
+7) DATA(lang) = COND string( WHEN sy-langu = 'DE' then 'German' 
+			     WHEN sy-langu = 'EN' then 'English'
+			     ELSE THROW cx_cant_be() ).
+Local Variable Bindings:
+several constructors operators allow the binding of intermediate results to expression-local
+variables:
+DATA(v1) = CONV i( LET s = get_size(.. ) IN s * s).
+DATA(v2) = NEW class( LET s0 = get_size(.. ) s = COND #( WHEN size_ok( s0 ) then s0 else 1 )
+                      IN p_size_x = s p_size_y = s ).
+Table Selection:
+1) Read access to internal tables at all expression-enabled operated positions.
+2) Also enabled in write positions.
+3) Table expressions are LHS-expressions.
+wa = tab[ inx ].
+wa = tab[ col1 = .. col2 = ..].    
+wa = tab[ vbeln key INDEX idx ].(Read table tab index 1. using key vbeln into wa).
+
+8) Table Comprehensions:
+Building Tables 
+   Table-Driven 
+        x_var = VALUE tabletype( FOR wa IN tab WHERE (.. ) (.. line-.. line.. ) ).
+      for each selected line in the source tables. construct a line in the result table,
+      Generalized of value constructor from static to dynamic number of lines.
+   Condition-driven:
+         y_var = VALUE tabletype( for wa THEN var .. UNTIL|WHILE var .. (..var..) ).
+       Construct lines in the result table until the condition on the LOOP variable is false.
+
+  Example: LOOP at tab1 into wa1 WHERE vbeln = 1.              tab3 = VALUE #(
+	     LOOP at tab2 into wa2.                                      FOR wa1 in tab1 where ( 
+		wa3-c = wa1-a.                        ---->                  vbeln = 1 )
+		wa3-d = wa2-b.                                           FOR wa2 in tab2 
+		APPEND wa3 into tab3.                                     ( c = wa1-a 
+	     ENDLOOP.                                                       d = wa2-b ) ).
+	  ENDLOOP.
+
+
+
+
+ 
+
+
+
+
+
+
